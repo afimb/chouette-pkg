@@ -6,4 +6,4 @@ Architecture: all
 Depends: tomcat7, postgresql
 Maintainer: dev <dev@cityway.fr>
 Description: SIRI Server
-Homepage: http://www.chouette.mobi/
+Homepage: http://www.chouette.mobi
