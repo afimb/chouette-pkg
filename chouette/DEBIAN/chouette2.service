@@ -1,0 +1,82 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          chouette2
+# Required-Start:    postgresql
+# Required-Stop:     postgresql
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Chouette 2 
+# Description:       Chouette 2 Ruby/Rails Application Server
+#                    placed in /etc/init.d.
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+DESC="Chouette 2 Ruby/Rails Application Server"
+DAEMON=/usr/bin/bundle
+NAME=chouette2
+PIDFILE=/var/lib/chouette/chouette2/tmp/pids/server.pid
+SCRIPTNAME=/etc/init.d/$NAME
+USER=chouette
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.2-14) to ensure that this file is present
+# and status_of_proc is working.
+. /lib/lsb/init-functions
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	su - $USER -c 'cd chouette2 && RAILS_ENV=production bundle exec script/delayed_job start > /dev/null 2>&1'
+	su - $USER -c 'cd chouette2 && bundle exec rails server -e production -d  > /dev/null 2>&1'
+	return 0
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	su - $USER -c 'cd chouette2 && RAILS_ENV=production bundle exec script/delayed_job stop > /dev/null 2>&1'
+        kill -9 $(cat $PIDFILE)
+	rm -f $PIDFILE
+	return 0
+}
+
+case "$1" in
+  start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	do_start
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+  status)
+        status_of_proc -p $PIDFILE $NAME $NAME
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|status}" >&2
+	exit 3
+	;;
+esac
+
+:

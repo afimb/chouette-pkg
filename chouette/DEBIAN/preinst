@@ -1,0 +1,2 @@
+#!/bin/bash
+useradd -m -d /var/lib/chouette -s /bin/bash -p kb2YMCMyf32Nw chouette

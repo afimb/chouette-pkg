@@ -1,0 +1,9 @@
+Package: chouette2
+Version: 2.4.0
+Section: misc
+Priority: optional
+Architecture: all
+Depends: mysql-common, libpq5, libsqlite3-0, openssl, libxml2, libxslt1.1, libreadline5, libreadline6, libssl1.0.0, libmysqlclient18, libevent-2.0-5, libevent-core-2.0-5, libevent-extra-2.0-5, postgresql, ruby (>= 1.9.3), bundler, libproj-dev, libxml2-dev, libxslt1-dev
+Maintainer: dev <dev@cityway.fr>
+Description: Affiche la date dans le terminal
+Homepage: http://127.0.0.1:3000
