@@ -4,6 +4,7 @@ ROOT=$(readlink -nf $(dirname $0)/..)
 NAME=irys-chouette-server
 VERSION=2.2.0
 
+cd $ROOT
 if ! [ -f $NAME-$VERSION-distribution.zip ]
 then
 	wget http://maven.chouette.cityway.fr/irys/irys-chouette-server/$VERSION/$NAME-$VERSION-distribution.zip

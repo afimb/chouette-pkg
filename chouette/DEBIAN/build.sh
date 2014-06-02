@@ -7,6 +7,7 @@ if ! [ -d $CHOUETTE_HOME ]
 then
 
 	# chouette command
+	cd $ROOT
 	if ! [ -f chouette-gui-command-2.4.0.zip ] 
 	then
 		wget http://maven.chouette.cityway.fr/fr/certu/chouette/chouette-gui-command/2.4.0/chouette-gui-command-2.4.0.zip
