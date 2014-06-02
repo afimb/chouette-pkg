@@ -25,7 +25,6 @@ then
 	git clone -b V2_4 git://github.com/afimb/chouette2
 	cd $CHOUETTE_HOME/chouette2
 	bundle install --path vendor/bundle --binstubs vendor/bundle/bin 
-	RAILS_ENV=production bundle exec rake assets:clean assets:precompile
 
 fi 
 
