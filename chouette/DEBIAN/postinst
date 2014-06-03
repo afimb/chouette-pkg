@@ -4,7 +4,7 @@ mkdir -p /var/lib/chouette/imports
 mkdir -p /var/lib/chouette/exports
 chmod a+x /var/lib/chouette/imports /var/lib/chouette/exports
 chmod a+w /usr/local/opt/chouette-command/chouette-cmd_2.4.0
-chown -R chouette:chouette  /var/lib/chouette/ /usr/local/opt
+chown -R chouette:chouette  /var/lib/chouette/ /usr/local/opt /etc/default/chouette
 
 su - postgres -c 'psql -c "CREATE USER chouette WITH PASSWORD '\''chouette'\'' CREATEDB;" '
 ret=$?
@@ -14,18 +14,18 @@ su - chouette -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake db:create
 su - chouette -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake assets:clean assets:precompile'
 
 
-update-rc.d chouette2 defaults
+update-rc.d chouette defaults
 
 echo ""
 echo "-------------------------------------------------------------------------"
-echo "Test chouette2 :"
+echo "Test chouette :"
 echo "su - chouette (password: chouette)"
 echo "cd chouette2"
 echo "RAILS_ENV=test bundle exec rake db:create apartment:migrate"
 echo "RAILS_ENV=test bundle exec rake spec"
 echo ""
 echo "-------------------------------------------------------------------------"
-echo "Start chouette2 :"
-echo "service chouette2 start"
+echo "Start chouette :"
+echo "service chouette start"
 echo "-------------------------------------------------------------------------"
 
