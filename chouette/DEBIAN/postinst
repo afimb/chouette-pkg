@@ -7,6 +7,9 @@ chmod a+w /usr/local/opt/chouette-command/chouette-cmd_2.4.0
 chown -R chouette:chouette  /var/lib/chouette/ /usr/local/opt
 
 su - postgres -c 'psql -c "CREATE USER chouette WITH PASSWORD '\''chouette'\'' CREATEDB;" '
+ret=$?
+[ $ret -eq 0 ] || echo ""
+
 su - chouette -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake db:create apartment:migrate'
 su - chouette -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake assets:clean assets:precompile'
 
