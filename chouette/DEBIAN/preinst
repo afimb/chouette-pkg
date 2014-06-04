@@ -1,5 +1,3 @@
 #!/bin/bash
-MESSAGE="uninstall chouette : type dpkg -r chouette"
-useradd -m -d /var/lib/chouette -s /bin/bash -p kb2YMCMyf32Nw chouette
-ret=$?
-[ $ret -eq 0 ] || echo $MESSAGE && exit $ret
+id chouette 
+[ $? -eq 0 ] || useradd -m -d /var/lib/chouette -s /bin/bash -p kb2YMCMyf32Nw chouette
