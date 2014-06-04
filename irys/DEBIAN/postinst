@@ -7,9 +7,12 @@ service tomcat7 stop
 
 find /var/lib/tomcat7/webapps -name "$NAME*" -exec rm -rf {} \;
 
-su - postgres -c 'psql -c "CREATE USER siri WITH PASSWORD '\''siri'\'' CREATEDB;" '
+su - postgres -c "cat <<EOF | psql
+      CREATE ROLE siri LOGIN PASSWORD 'siri' CREATEDB;
+EOF"
 su - postgres -c 'createdb siri'
-su - postgres -c 'export PGPASSWORD=siri ; psql -h localhost -d siri -U siri -w -f /tmp/irys_server_$VERSION/siri.sql -v schemaname=siri '
+su - postgres -c 'export PGPASSWORD=siri ; psql -h localhost -d siri -U siri -w -f /tmp/irys_server_2.2.0/siri.sql -v schemaname=siri -v username=siri'
+
 
 mkdir -p /etc/irys/$NAME
 cp -a /tmp/irys_server_$VERSION/log4j.properties /etc/irys/$NAME
