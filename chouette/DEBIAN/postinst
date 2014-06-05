@@ -18,6 +18,9 @@ update-rc.d chouette defaults
 echo ""
 echo ""
 echo "-------------------------------------------------------------------------"
-echo "start chouette : service chouette start"
+echo " configure chouette with your settings : "
+echo " edit file /etc/default/chouette"
+echo ""
+echo " then start chouette : service chouette start"
 echo "-------------------------------------------------------------------------"
 
