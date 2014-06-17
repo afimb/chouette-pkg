@@ -11,7 +11,7 @@ export RAILS_ENV=production
 # Geoportail map key (IGN maps not available if not set
 #export CHOUETTE_GEOPORTAIL_KEY=xxxxxxxxxxxxxxx
 
-# Public root URL for Chouette 
+# Public root URL for Chouette (may be = server_ip:3000) 
 export CHOUETTE_BASE_URL=my-domain-name.com
 
 # path to chouette gui command launch script
@@ -19,14 +19,14 @@ CHOUETTE_GUI_COMMAND=/usr/local/opt/chouette-command/chouette-cmd_2.4.0/chouette
 
 ## Mailer parameters 
 # sender address
-export CHOUETTE_MAIL_SENDER=noreply@chouette.mobi
+export CHOUETTE_MAIL_SENDER=noreply@my-domain-name.com
 
 # send mode : use sendmail or smtp
 export CHOUETTE_MAILER=sendmail
 
 # smtp parameters 
-#export CHOUETTE_SMTP_ADDRESS=smtp.sample.com
-#export CHOUETTE_SMTP_DOMAIN=sample.com
+#export CHOUETTE_SMTP_ADDRESS=smtp.my-domain-name.com
+#export CHOUETTE_SMTP_DOMAIN=my-domain-name.com
 #export CHOUETTE_SMTP_PORT=25
 
 # user, password and auth must be set together
