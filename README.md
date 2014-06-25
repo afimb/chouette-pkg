@@ -10,6 +10,8 @@ Release Notes
 This is the first version
 At this time, only debian packages are available
 
+Packages have been tested on Debian version 7.5
+
 
 Installation
 ------------
