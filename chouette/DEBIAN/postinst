@@ -3,7 +3,7 @@
 mkdir -p /var/lib/chouette/imports
 mkdir -p /var/lib/chouette/exports
 chmod a+x /var/lib/chouette/imports /var/lib/chouette/exports
-chmod a+w /usr/local/opt/chouette-command/chouette-cmd_2.4.0
+chmod a+w /usr/local/opt/chouette-command/chouette-cmd
 chown -R chouette:chouette  /var/lib/chouette/ /usr/local/opt /etc/default/chouette
 
 su - postgres -c "cat <<EOF | psql

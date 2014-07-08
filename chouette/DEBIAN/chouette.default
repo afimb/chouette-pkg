@@ -15,7 +15,7 @@ export RAILS_ENV=production
 export CHOUETTE_BASE_URL=my-domain-name.com
 
 # path to chouette gui command launch script
-CHOUETTE_GUI_COMMAND=/usr/local/opt/chouette-command/chouette-cmd_2.4.0/chouette
+CHOUETTE_GUI_COMMAND=/usr/local/opt/chouette-command/chouette-cmd/chouette
 
 ## Mailer parameters 
 # sender address
