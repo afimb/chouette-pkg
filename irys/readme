@@ -1,0 +1,20 @@
+installation package for irys 2.2.0 
+
+This package has been tested on Debian 7.5 only
+
+this package requires following packages : 
+
+openjdk-7-jre tomcat7 postgresql
+
+Notes :
+- oracle jre 7 can be used instead of openjdk one
+- postgresql version 9.x required
+
+to install irys server, download irys-chouette-server.deb and install it :
+
+  dpkg -i irys-chouette-server.deb
+
+follow instructions after installation
+
+to update, remove previous version before install new one
+   - created user and database are preserved
