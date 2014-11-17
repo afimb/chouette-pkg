@@ -2,8 +2,8 @@
 ROOT=$(readlink -nf $(dirname $0)/..)
 CHOUETTE_HOME=$ROOT/chouette/var/lib/chouette
 unset GEM_HOME
-VERSION=2.4.1
-BRANCH=V2_4
+VERSION=2.5.1
+BRANCH=V2_5
 if ! [ -d $CHOUETTE_HOME ] 
 then
 
