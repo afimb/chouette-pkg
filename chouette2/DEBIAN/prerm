@@ -1,0 +1,6 @@
+#!/bin/bash
+
+CHOUETTE_SERVICE="chouette"
+
+service $CHOUETTE_SERVICE  stop
+update-rc.d $CHOUETTE_SERVICE remove

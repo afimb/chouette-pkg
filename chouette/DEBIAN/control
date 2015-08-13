@@ -1,9 +1,9 @@
 Package: chouette
-Version: 2.5.1
+Version: 3.0.0
 Section: misc
 Priority: optional
 Architecture: all
-Depends: libpq5, libsqlite3-0, openssl, libxml2, libxslt1.1, libreadline5, libreadline6, libssl1.0.0, libevent-2.0-5, libevent-core-2.0-5, libevent-extra-2.0-5, postgresql, ruby (>= 1.9.3), bundler, libproj-dev, libxml2-dev, libxslt1-dev
+Depends: java7-runtime,  postgresql (>= 9.4)
 Maintainer: dev <dev@cityway.fr>
-Description: Chouette Application
+Description: WildFly Application Server
 Homepage: http://www.chouette.mobi

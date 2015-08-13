@@ -1,0 +1,2 @@
+# Mandatory variable : must be set to production
+export RAILS_ENV=production

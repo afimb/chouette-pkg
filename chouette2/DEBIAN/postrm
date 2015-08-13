@@ -1,0 +1,5 @@
+#!/bin/bash
+
+CHOUETTE_HOME=/var/lib/chouette
+
+rm -rf $CHOUETTE_HOME/chouette2

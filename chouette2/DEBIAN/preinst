@@ -1,0 +1,6 @@
+#!/bin/bash
+CHOUETTE_USER=chouette
+CHOUETTE_HOME=/var/lib/chouette
+
+id chouette 
+[ $? -eq 0 ] || useradd -m -d $CHOUETTE_HOME -s /bin/bash -p kb2YMCMyf32Nw $CHOUETTE_USER

@@ -1,0 +1,25 @@
+#!/bin/bash
+ROOT=$(readlink -nf $(dirname $0)/..)
+CHOUETTE_HOME=$ROOT/chouette2/var/lib/chouette
+unset GEM_HOME
+VERSION=3.0.0
+BRANCH=V3_0
+	
+# chouette
+rm -rf $ROOT/chouette2/
+mkdir -p  $CHOUETTE_HOME
+cd $CHOUETTE_HOME
+git clone -b ${BRANCH} git://github.com/afimb/chouette2
+cd $CHOUETTE_HOME/chouette2
+bundle install --path vendor/bundle --binstubs vendor/bundle/bin --full-index
+
+# service chouette
+mkdir -p $ROOT/chouette2/etc/init.d
+cp $ROOT/DEBIAN/chouette.service $ROOT/chouette2/etc/init.d/chouette
+mkdir -p $ROOT/chouette2/etc/default
+cp -a $ROOT/DEBIAN/chouette.default $ROOT/chouette2/etc/default/chouette
+
+# package
+cd $ROOT
+cp -a $ROOT/DEBIAN $ROOT/chouette2
+dpkg-deb --build chouette2

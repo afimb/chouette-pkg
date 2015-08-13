@@ -1,38 +1,89 @@
 #!/bin/bash
-ROOT=$(readlink -nf $(dirname $0)/..)
-CHOUETTE_HOME=$ROOT/chouette/var/lib/chouette
-unset GEM_HOME
-VERSION=2.5.1
-BRANCH=V2_5
-if ! [ -d $CHOUETTE_HOME ] 
-then
 
-        # chouette command
-	cd $ROOT
-	if ! [ -f chouette-gui-command-${VERSION}.zip ] 
-	then
-		wget http://maven.chouette.cityway.fr/fr/certu/chouette/chouette-gui-command/${VERSION}/chouette-gui-command-${VERSION}.zip
-	fi
-	mkdir -p $ROOT/chouette/usr/local/opt/chouette-command
-	unzip -d $ROOT/chouette/usr/local/opt/chouette-command chouette-gui-command-${VERSION}.zip
-        mv $ROOT/chouette/usr/local/opt/chouette-command/chouette-cmd_${VERSION} $ROOT/chouette/usr/local/opt/chouette-command/chouette-cmd
+SCRIPT_DIR=$(readlink -nf $(dirname $0))
+BUILD_DIR=$SCRIPT_DIR/../chouette
 
-	# service chouette
-	mkdir -p $ROOT/chouette/etc/init.d
-	cp $ROOT/DEBIAN/chouette.service $ROOT/chouette/etc/init.d/chouette
- 
-	# chouette
-	mkdir -p $ROOT/chouette/etc/default
-	cp -a $ROOT/DEBIAN/chouette.default $ROOT/chouette/etc/default/chouette
-	mkdir -p  $CHOUETTE_HOME
-	cd $CHOUETTE_HOME
-	git clone -b ${BRANCH} git://github.com/afimb/chouette2
-	cd $CHOUETTE_HOME/chouette2
-	bundle install --path vendor/bundle --binstubs vendor/bundle/bin 
+WILDFLY_VERSION=8.2.0.Final
+WILDFLY_FILENAME=wildfly-$WILDFLY_VERSION
+WILDFLY_ARCHIVE_NAME=$WILDFLY_FILENAME.tar.gz
+WILDFLY_DOWNLOAD_ADDRESS=http://download.jboss.org/wildfly/$WILDFLY_VERSION/$WILDFLY_ARCHIVE_NAME
 
-fi 
+INSTALL_DIR=$BUILD_DIR/opt
+WILDFLY_DIR=$INSTALL_DIR/wildfly
+WILDFLY_FULL_DIR=$INSTALL_DIR/$WILDFLY_FILENAME
 
-# package
-cd $ROOT
-cp -a $ROOT/DEBIAN $ROOT/chouette
+WILDFLY_USER="chouette"
+WILDFLY_SERVICE="wildfly"
+WILDFLY_STARTUP_TIMEOUT=240
+WILDFLY_SHUTDOWN_TIMEOUT=30
+WILDFLY_SERVICE_CONF=$BUILD_DIR/etc/default/$WILDFLY_SERVICE
+
+POSTGRESQL_JDBC_DRIVER=postgresql-9.4-1201.jdbc41.jar
+POSTGRESQL_JDBC_DRIVER_URL=https://jdbc.postgresql.org/download/$POSTGRESQL_JDBC_DRIVER
+
+ls cd $SCRIPT_DIR/../
+
+echo "Downloading: $WILDFLY_DOWNLOAD_ADDRESS..."
+[ -e "$WILDFLY_ARCHIVE_NAME" ] && echo 'Wildfly archive already exists.'
+if [ ! -e "$WILDFLY_ARCHIVE_NAME" ]; then
+  wget -q $WILDFLY_DOWNLOAD_ADDRESS
+  if [ $? -ne 0 ]; then
+    echo "Not possible to download Wildfly."
+    exit 1
+  fi
+fi
+
+echo "Downloading: $POSTGRESQL_JDBC_DRIVER_URL..."
+[ -e "$POSTGRESQL_JDBC_DRIVER" ] && echo 'Postgresql JDBC Driver archive already exists.'
+if [ ! -e "$POSTGRESQL_JDBC_DRIVER" ]; then
+  wget -q $POSTGRESQL_JDBC_DRIVER_URL
+  if [ $? -ne 0 ]; then
+    echo "Not possible to download Postgresql JDBC Driver."
+    exit 1
+  fi
+fi
+
+echo "Cleaning up..."
+rm -rf "$BUILD_DIR"
+
+echo "Installation..."
+mkdir -p $INSTALL_DIR
+tar -xzf $WILDFLY_ARCHIVE_NAME -C $INSTALL_DIR
+mkdir -p $BUILD_DIR/etc/init.d/
+cp $WILDFLY_FULL_DIR/bin/init.d/wildfly-init-debian.sh $BUILD_DIR/etc/init.d/$WILDFLY_SERVICE
+mkdir -p $BUILD_DIR/tmp
+cp $POSTGRESQL_JDBC_DRIVER  $BUILD_DIR/tmp
+
+echo "Configuring service..."
+mkdir -p $BUILD_DIR/etc/default
+echo JBOSS_HOME=/opt/wildfly > $WILDFLY_SERVICE_CONF
+echo JBOSS_USER=$WILDFLY_USER >> $WILDFLY_SERVICE_CONF
+echo STARTUP_WAIT=$WILDFLY_STARTUP_TIMEOUT >> $WILDFLY_SERVICE_CONF
+echo SHUTDOWN_WAIT=$WILDFLY_SHUTDOWN_TIMEOUT >> $WILDFLY_SERVICE_CONF
+echo JBOSS_CONFIG=standalone-full.xml >> $WILDFLY_SERVICE_CONF
+echo export JAVA_OPTS=\"-Xmx1024m -Djboss.bind.address=0.0.0.0\" >> $WILDFLY_SERVICE_CONF
+
+$WILDFLY_FULL_DIR/bin/add-user.sh
+
+# chouette iev
+IEV_VERSION=3.0.0
+IEV_FILENAME=chouette_iev-${IEV_VERSION}.zip
+IEV_DOWNLOAD_ADDRESS=http://maven.chouette.mobi/mobi/chouette/chouette_iev/$IEV_VERSION/$IEV_FILENAME
+
+echo "Downloading: $IEV_DOWNLOAD_ADDRESS..."
+[ -e "$IEV_FILENAME" ] && echo 'IEV archive already exists.'
+if [ ! -e "$IEV_FILENAME" ]; then
+  wget -q $IEV_DOWNLOAD_ADDRESS
+  if [ $? -ne 0 ]; then
+    echo "Not possible to download IEV."
+    exit 1
+  fi
+fi
+
+unzip -d $BUILD_DIR/tmp $IEV_FILENAME
+mkdir -p $BUILD_DIR/etc/chouette/iev
+mv $BUILD_DIR/tmp/chouette-iev_3.0.0/iev.properties $BUILD_DIR/etc/chouette/iev
+       
+cp -a DEBIAN chouette
 dpkg-deb --build chouette
+

@@ -1,26 +1,48 @@
 #!/bin/bash
 
-mkdir -p /var/lib/chouette/imports
-mkdir -p /var/lib/chouette/exports
-chmod a+x /var/lib/chouette/imports /var/lib/chouette/exports
-chmod a+w /usr/local/opt/chouette-command/chouette-cmd
-chown -R chouette:chouette  /var/lib/chouette/ /usr/local/opt /etc/default/chouette
-
+# postgresql
 su - postgres -c "cat <<EOF | psql
       CREATE ROLE chouette LOGIN PASSWORD 'chouette' CREATEDB;
+      CREATE DATABASE chouette2 OWNER chouette;
+      CREATE DATABASE iev OWNER chouette;
 EOF"
 
-su - chouette -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake db:create apartment:migrate'
-su - chouette -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake assets:clean assets:precompile'
+# wildfly
+INSTALL_DIR=/opt
+WILDFLY_VERSION=8.2.0.Final
+WILDFLY_FILENAME=wildfly-$WILDFLY_VERSION
+WILDFLY_DIR=$INSTALL_DIR/wildfly
+WILDFLY_FULL_DIR=$INSTALL_DIR/$WILDFLY_FILENAME
+WILDFLY_USER="chouette"
+WILDFLY_SERVICE="wildfly"
+WILDFLY_SERVICE_CONF=/etc/default/$WILDFLY_SERVICE
 
-update-rc.d chouette defaults
+ln -s $WILDFLY_FULL_DIR/ $WILDFLY_DIR
 
-echo ""
-echo ""
-echo "-------------------------------------------------------------------------"
-echo " configure chouette with your settings : "
-echo " edit file /etc/default/chouette"
-echo ""
-echo " then start chouette : service chouette start"
-echo "-------------------------------------------------------------------------"
+chown -R $WILDFLY_USER:$WILDFLY_USER $WILDFLY_FULL_DIR
+chown $WILDFLY_USER:$WILDFLY_USER $WILDFLY_DIR
+chown root:root $WILDFLY_SERVICE_CONF
+chown root:root /etc/init.d/$WILDFLY_SERVICE
+chmod 755 /etc/init.d/$WILDFLY_SERVICE
+
+update-rc.d $WILDFLY_SERVICE defaults
+update-rc.d $WILDFLY_SERVICE enable
+service $WILDFLY_SERVICE start
+
+$WILDFLY_DIR/bin/jboss-cli.sh --connect << "EOF"
+module add --name=org.postgres --resources=/tmp/postgresql-9.4-1201.jdbc41.jar --dependencies=javax.api,javax.transaction.api
+/subsystem=datasources/jdbc-driver=postgres:add(driver-name="postgres",driver-module-name="org.postgres",driver-class-name=org.postgresql.Driver)
+data-source add --jndi-name=java:jboss/datasources/chouette --name=chouette --connection-url=jdbc:postgresql://localhost:5432/chouette2 --driver-name=postgres --user-name=chouette --password=chouette --max-pool-size=30
+data-source add --jndi-name=java:jboss/datasources/iev --name=iev --connection-url=jdbc:postgresql://localhost:5432/iev --driver-name=postgres --user-name=chouette --password=chouette
+/subsystem=ee/managed-executor-service=default/ :write-attribute(name=max-threads,value=15)
+/subsystem=ee/managed-executor-service=default/ :write-attribute(name=queue-length,value=15)
+/subsystem=undertow/server=default-server/http-listener=default/ :write-attribute(name=max-post-size, value=80000000)
+exit
+EOF
+
+# chouette iev
+$WILDFLY_DIR/bin/jboss-cli.sh --connect << "EOF"
+deploy --force /tmp/chouette-iev_3.0.0/chouette.ear
+exit
+EOF
 

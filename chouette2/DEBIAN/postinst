@@ -1,0 +1,23 @@
+#!/bin/bash
+
+CHOUETTE_USER=chouette
+CHOUETTE_HOME=/var/lib/chouette
+CHOUETTE_SERVICE=chouette
+
+chown -R $CHOUETTE_USER:$CHOUETTE_USER  $CHOUETTE_HOME /etc/default/chouette 
+
+su - $CHOUETTE_USER -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake db:migrate'
+su - $CHOUETTE_USER -c 'cd chouette2 ; RAILS_ENV=production bundle exec rake assets:clobber assets:precompile'
+
+update-rc.d $CHOUETTE_SERVICE defaults
+update-rc.d $CHOUETTE_SERVICE enable
+service $CHOUETTE_SERVICE start
+
+echo ""
+echo ""
+echo "-------------------------------------------------------------------------"
+echo " configure chouette with your settings : "
+echo " edit file /etc/default/chouette"
+echo ""
+echo " then start chouette : service chouette start"
+echo "-------------------------------------------------------------------------"
